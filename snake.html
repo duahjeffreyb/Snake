@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Snake</title>
+	<style type="text/css">
+		.split {
+		  height: 100%;
+		  width: 50%;
+		  position: fixed;
+		  z-index: 1;
+		  top: 0;
+		  overflow-x: hidden;
+		  padding-top: 10px;
+		}
+		.left{
+			left: 0;
+		}
+		.right{
+			right: 0;
+			padding-top: 20px;
+		}
+		.container{
+			width: 600px;
+			height: auto;
+		}
+
+		.row {
+			position: relative;
+			display: block;
+			width: 100%;
+			height: 40px;
+			border-bottom: 1px solid #AFAFAF;
+		}
+
+		.name {
+			position: relative;
+			display: inline-block;
+			width: 75%;
+			line-height: 45px;
+			font-family: Arial;
+			font-size: 20px;
+		}
+
+		.score {
+			position: relative;
+			display: inline-block;
+			width: 25%;
+			font-family: Arial;
+		}
+		.title{
+			font-size: 30px;
+			font-family: 'Raleway', sans-serif;
+			font-weight: bold;
+			background-color: red;
+			border: 1px;
+			border-radius: 7px;
+		}
+	</style>
+</head>
+<body>
+	<div class="split left">
+	<canvas id = "snakeCanvas" width = "700" height = "700"></canvas>
+	</div>
+	<script type ="text/javascript">
+		var canvas, context;
+		var score = 0;
+		if(localStorage.length > 0){
+			var scores = JSON.parse(localStorage.getItem("scores"));
+		}
+		else{
+			scores = [];
+		}
+		var name;
+		var length = 6;
+		var speed;
+
+		window.onload = function(){
+			canvas = document.getElementById("snakeCanvas");
+			context = canvas.getContext("2d");
+
+			document.addEventListener("keydown", keyDownEvent);
+			speed = 8;
+			setInterval(draw, 1000 / speed);
+		};
+		var defaultSize = 3;
+		var size = defaultSize;
+		var snakeTrail = [];
+		var snakeX = snakeY = 10;
+
+		var gridSize = 35;
+    	var tileSize = 20;
+      	var nextX = nextY = 0;
+
+		var fruitX = (fruitY = 15);
+		var slowX = 5;
+		var slowY = 5;
+
+
+		function draw() {
+        snakeX += nextX;
+        snakeY += nextY;
+
+        if (snakeX < 0) {
+          snakeX = gridSize - 1;
+        }
+        if (snakeX > gridSize - 1) {
+          snakeX = 0;
+        }
+
+        if (snakeY < 0) {
+          snakeY = gridSize - 1;
+        }
+        if (snakeY > gridSize - 1) {
+          snakeY = 0;
+        }
+
+        if (snakeX == fruitX && snakeY == fruitY) {
+          size++;
+          score++;
+          var current = document.getElementById("current");
+          current.innerHTML = score;
+          fruitX = Math.floor(Math.random() * gridSize);
+          fruitY = Math.floor(Math.random() * gridSize);
+        }
+
+        context.fillStyle = "red";
+        context.strokeStyle = "black";
+        context.lineWidth = 20;
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.strokeRect(0, 0, canvas.width, canvas.height);
+
+        context.fillStyle = "green";
+        for (var i = 0; i < snakeTrail.length; i++) {
+          context.fillRect(
+            snakeTrail[i].x * tileSize,
+            snakeTrail[i].y * tileSize,
+            tileSize,
+            tileSize
+          );
+
+          if (snakeTrail[i].x == snakeX && snakeTrail[i].y == snakeY) {
+            size = defaultSize;
+            scores.push(score);
+            localStorage.setItem("scores", JSON.stringify(scores));
+            score = 0;
+            snakeX = snakeY = 10;
+            nextX = nextY = 0;
+            displayLeaderboard();
+          }
+        }
+
+        function displayLeaderboard(){
+        	var realScores = JSON.parse(localStorage.getItem("scores"));
+        	realScores.sort((a,b)=>b-a);
+        	while(realScores.length > length){
+        		realScores.pop();
+        	}
+        	localStorage.setItem("scores", JSON.stringify(realScores));
+        	for(i = 0; i < realScores.length; i++){
+				var playerScore = i + "score";
+				document.getElementById(playerScore).innerHTML = realScores[i];
+        	}
+        }
+        context.fillStyle = "yellow";
+        context.fillRect(fruitX * tileSize, fruitY * tileSize, tileSize, tileSize);
+      
+        snakeTrail.push({ x: snakeX, y: snakeY });
+        while (snakeTrail.length > size) {
+          snakeTrail.shift();
+        }
+      }
+
+      function keyDownEvent(e){
+		switch(e.keyCode){
+			case 37:
+				nextX = -1;
+				nextY = 0;
+				break;
+			case 38:
+				nextX = 0;
+				nextY = -1;
+				break;
+			case 39:
+				nextX = 1;
+				nextY = 0;
+				break;
+			case 40:
+				nextX = 0;
+				nextY = 1;
+				break;
+			}
+		}
+		function clearData(){
+			localStorage.clear();
+			location.reload();
+		}
+	</script>
+	<div class="split right" id="leaderboard">
+		<label class="title" >Leaderboard</label>
+		<div class = "container">
+			<div class="row">
+				<div id="nameHeader" class="name">Player Name</div><div id="scoreHeader" class="score">Score</div>
+			</div>
+			<div class="row">
+				<div id="0name" class="name" style="color: gold; font-weight: bold">1st: </div><div id="0score" class="score" style="color: gold"></div>
+			</div>
+			<div class="row">			
+				<div id="1name" class="name" style="color: silver; font-weight: bold">2nd: </div><div id="1score" class="score" style="color: silver"></div>
+			</div>
+			<div class="row">			
+				<div id="2name" class="name" style="color: brown; font-weight: bold">3rd: </div><div id="2score" class="score" style="color: brown"></div>
+			</div>
+			<div class="row">			
+				<div id="3name" class="name">4th: </div><div id="3score" class="score"></div>
+			</div>
+			<div class="row">			
+				<div id="4name" class="name">5th: </div><div id="4score" class="score"></div>
+			</div>
+			<div class="row">			
+				<div id="5name" class="name">6th: </div><div id="5score" class="score"></div>
+			</div>
+			<div class="row">			
+				<div id="6name" class="name">Current Score</div><div id="current" class="score" style="color: red; font-weight: bold
+				"></div>
+				<button onclick="clearData()">Clear Leaderboard</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
