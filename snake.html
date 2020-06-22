@@ -64,6 +64,7 @@
 	<script type ="text/javascript">
 		var canvas, context;
 		var score = 0;
+		//check to see if there are current scores needing to be stored
 		if(localStorage.length > 0){
 			var scores = JSON.parse(localStorage.getItem("scores"));
 		}
@@ -74,6 +75,7 @@
 		var length = 6;
 		var speed;
 
+		//create canvas, addeventlistener, and set speed on load
 		window.onload = function(){
 			canvas = document.getElementById("snakeCanvas");
 			context = canvas.getContext("2d");
@@ -82,6 +84,7 @@
 			speed = 8;
 			setInterval(draw, 1000 / speed);
 		};
+		//set snake default size and create array to hold snake's tail location
 		var defaultSize = 3;
 		var size = defaultSize;
 		var snakeTrail = [];
@@ -97,9 +100,11 @@
 
 
 		function draw() {
+		//move snake to next position
         snakeX += nextX;
         snakeY += nextY;
-
+		
+		//allows snake to wrap around grid
         if (snakeX < 0) {
           snakeX = gridSize - 1;
         }
@@ -114,6 +119,7 @@
           snakeY = 0;
         }
 
+		//cheack for collison with fruit, increase size and score
         if (snakeX == fruitX && snakeY == fruitY) {
           size++;
           score++;
@@ -123,14 +129,17 @@
           fruitY = Math.floor(Math.random() * gridSize);
         }
 
+		//paint grid
         context.fillStyle = "red";
         context.strokeStyle = "black";
         context.lineWidth = 20;
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.strokeRect(0, 0, canvas.width, canvas.height);
 
+		//paint snake 
         context.fillStyle = "green";
         for (var i = 0; i < snakeTrail.length; i++) {
+		  //draw a member of the snake's trail
           context.fillRect(
             snakeTrail[i].x * tileSize,
             snakeTrail[i].y * tileSize,
@@ -138,20 +147,24 @@
             tileSize
           );
 
+		  //check to see if this member collides with the snake, end game if collison occurs
           if (snakeTrail[i].x == snakeX && snakeTrail[i].y == snakeY) {
             size = defaultSize;
+			//add score and "stringfy" array and put it in localstorage
             scores.push(score);
             localStorage.setItem("scores", JSON.stringify(scores));
             score = 0;
             snakeX = snakeY = 10;
             nextX = nextY = 0;
-            displayLeaderboard();
+            updateLeaderboard();
           }
         }
 
-        function displayLeaderboard(){
+        function updateLeaderboard(){
+			//get scores from localstorage and sort them from descending order
         	var realScores = JSON.parse(localStorage.getItem("scores"));
         	realScores.sort((a,b)=>b-a);
+			//only keep the top 6 scores
         	while(realScores.length > length){
         		realScores.pop();
         	}
@@ -170,6 +183,7 @@
         }
       }
 
+	  //checks for which arrow key is pressed and sets the snake in that direction
       function keyDownEvent(e){
 		switch(e.keyCode){
 			case 37:
@@ -190,7 +204,9 @@
 				break;
 			}
 		}
-		function clearData(){
+
+		//clears the leaderboard
+		function clearLeaderboard(){
 			localStorage.clear();
 			location.reload();
 		}
