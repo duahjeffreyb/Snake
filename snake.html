@@ -15,6 +15,19 @@
 		.left{
 			left: 0;
 		}
+		@keyframes change-color{
+			from{
+				background-color: black;
+			}
+			to{
+				background-color: red;
+			}
+		}
+
+		.animation{
+			animation-name: change-color;
+			animation-duration: 1s;
+		}
 		.right{
 			right: 0;
 			padding-top: 20px;
@@ -62,11 +75,11 @@
 	<canvas id = "snakeCanvas" width = "700" height = "700"></canvas>
 	</div>
 	<script type ="text/javascript">
-		var canvas, context;
+		var canvas, context, realScores, scores, newScore;
 		var score = 0;
 		//check to see if there are current scores needing to be stored
 		if(localStorage.length > 0){
-			var scores = JSON.parse(localStorage.getItem("scores"));
+			scores = JSON.parse(localStorage.getItem("scores"));
 		}
 		else{
 			scores = [];
@@ -131,7 +144,7 @@
 
 		//paint grid
         context.fillStyle = "red";
-        context.strokeStyle = "black";
+        context.strokeStyle = "navy";
         context.lineWidth = 20;
         context.fillRect(0, 0, canvas.width, canvas.height);
         context.strokeRect(0, 0, canvas.width, canvas.height);
@@ -151,9 +164,15 @@
           if (snakeTrail[i].x == snakeX && snakeTrail[i].y == snakeY) {
             size = defaultSize;
 			//add score and "stringfy" array and put it in localstorage
-            scores.push(score);
+			newScore = score;
+			//scores.push(score);
+			if(!checkDuplicate()){
+				scores.push(score);
+			}
             localStorage.setItem("scores", JSON.stringify(scores));
             score = 0;
+			var current = document.getElementById("current");
+          	current.innerHTML = score;
             snakeX = snakeY = 10;
             nextX = nextY = 0;
             updateLeaderboard();
@@ -162,16 +181,28 @@
 
         function updateLeaderboard(){
 			//get scores from localstorage and sort them from descending order
-        	var realScores = JSON.parse(localStorage.getItem("scores"));
+        	realScores = JSON.parse(localStorage.getItem("scores"));
+			currentScores = scores;
         	realScores.sort((a,b)=>b-a);
+			scores = realScores;
 			//only keep the top 6 scores
         	while(realScores.length > length){
         		realScores.pop();
         	}
         	localStorage.setItem("scores", JSON.stringify(realScores));
         	for(i = 0; i < realScores.length; i++){
+				var points = realScores[i];
 				var playerScore = i + "score";
 				document.getElementById(playerScore).innerHTML = realScores[i];
+				if(newScore == realScores[i] && newScore != 0){
+						var row = document.getElementById(playerScore);
+						if(row.classList.contains('animation')){
+							row.classList.remove('animation');
+						}
+						setTimeout(setTimeout(function(){
+							row.classList.add('animation');
+						}, 0))
+				}
         	}
         }
         context.fillStyle = "yellow";
@@ -182,6 +213,22 @@
           snakeTrail.shift();
         }
       }
+
+	  function checkDuplicate(){
+		  var i = 0;
+		  var duplicate = false;
+		  if(scores[0] == 0){
+			  return duplicate;
+		  }
+		  while(i < length){
+			  if(scores[i] == score){
+				duplicate = true;
+				return duplicate;
+			  }
+			  i++;
+		  }
+		  return duplicate;
+	  }
 
 	  //checks for which arrow key is pressed and sets the snake in that direction
       function keyDownEvent(e){
@@ -207,6 +254,8 @@
 
 		//clears the leaderboard
 		function clearLeaderboard(){
+			scores = [];
+			scores.length = 0;
 			localStorage.clear();
 			location.reload();
 		}
@@ -238,7 +287,9 @@
 			<div class="row">			
 				<div id="6name" class="name" style="color: white;">Current Score</div><div id="current" class="score" style="color: red; font-weight: bold
 				"></div>
-				<button onclick="clearData()">Clear Leaderboard</button>
+				<div class = "name"><button onclick="clearLeaderboard()">Clear Leaderboard</button></div>
+				<label class = 'title'>Instructions</label>
+
 			</div>
 		</div>
 	</div>
