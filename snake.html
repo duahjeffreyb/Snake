@@ -20,7 +20,7 @@
 				background-color: black;
 			}
 			to{
-				background-color: red;
+				background-color: green;
 			}
 		}
 
@@ -94,7 +94,7 @@
 			context = canvas.getContext("2d");
 
 			document.addEventListener("keydown", keyDownEvent);
-			speed = 8;
+			speed = 10;
 			setInterval(draw, 1000 / speed);
 		};
 		//set snake default size and create array to hold snake's tail location
@@ -193,9 +193,10 @@
         	for(i = 0; i < realScores.length; i++){
 				var points = realScores[i];
 				var playerScore = i + "score";
+				var rowName = i + "row";
 				document.getElementById(playerScore).innerHTML = realScores[i];
 				if(newScore == realScores[i] && newScore != 0){
-						var row = document.getElementById(playerScore);
+						var row = document.getElementById(rowName);
 						if(row.classList.contains('animation')){
 							row.classList.remove('animation');
 						}
@@ -234,21 +235,41 @@
       function keyDownEvent(e){
 		switch(e.keyCode){
 			case 37:
+			if(nextX == 1){
+				break;
+			}
+			else{
 				nextX = -1;
 				nextY = 0;
 				break;
+			}
 			case 38:
+			if(nextY == 1){
+				break;
+			}
+			else{
 				nextX = 0;
 				nextY = -1;
 				break;
+			}
 			case 39:
+			if(nextX == -1){
+				break;
+			}
+			else{
 				nextX = 1;
 				nextY = 0;
 				break;
+			}
 			case 40:
+			if(nextY == -1){
+				break;
+			}
+			else{
 				nextX = 0;
 				nextY = 1;
 				break;
+			}
 			}
 		}
 
@@ -266,22 +287,22 @@
 			<div class="row">
 				<div id="nameHeader" class="name">Player Name</div><div id="scoreHeader" class="score">Score</div>
 			</div>
-			<div class="row">
+			<div id = '0row' class="row">
 				<div id="0name" class="name" style="color: gold; font-weight: bold">1st: </div><div id="0score" class="score" style="color: gold"></div>
 			</div>
-			<div class="row">			
+			<div id = '1row' class="row">			
 				<div id="1name" class="name" style="color: silver; font-weight: bold">2nd: </div><div id="1score" class="score" style="color: silver"></div>
 			</div>
-			<div class="row">			
+			<div id = '2row' class="row">			
 				<div id="2name" class="name" style="color: brown; font-weight: bold">3rd: </div><div id="2score" class="score" style="color: brown"></div>
 			</div>
-			<div class="row">			
+			<div id = '3row' class="row">			
 				<div id="3name" class="name" style="color: white;">4th: </div><div id="3score" class="score" style="color: white;"></div>
 			</div>
-			<div class="row">			
+			<div id = '4row' class="row">			
 				<div id="4name" class="name" style="color: white;">5th: </div><div id="4score" class="score" style="color: white;"></div>
 			</div>
-			<div class="row">			
+			<div id = '5row' class="row">			
 				<div id="5name" class="name" style="color: white;">6th: </div><div id="5score" class="score"style="color: white;"></div>
 			</div>
 			<div class="row">			
