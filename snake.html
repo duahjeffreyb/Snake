@@ -2,73 +2,7 @@
 <html>
 <head>
 	<title>Snake</title>
-	<style type="text/css">
-		.split {
-		  height: 100%;
-		  width: 50%;
-		  position: fixed;
-		  z-index: 1;
-		  top: 0;
-		  overflow-x: hidden;
-		  padding-top: 10px;
-		}
-		.left{
-			left: 0;
-		}
-		@keyframes change-color{
-			from{
-				background-color: black;
-			}
-			to{
-				background-color: green;
-			}
-		}
-
-		.animation{
-			animation-name: change-color;
-			animation-duration: 1s;
-		}
-		.right{
-			right: 0;
-			padding-top: 20px;
-		}
-		.container{
-			width: 600px;
-			height: auto;
-		}
-
-		.row {
-			position: relative;
-			display: block;
-			width: 100%;
-			height: 40px;
-			border-bottom: 1px solid #AFAFAF;
-		}
-
-		.name {
-			position: relative;
-			display: inline-block;
-			width: 75%;
-			line-height: 45px;
-			font-family: Arial;
-			font-size: 20px;
-		}
-
-		.score {
-			position: relative;
-			display: inline-block;
-			width: 25%;
-			font-family: Arial;
-		}
-		.title{
-			font-size: 30px;
-			font-family: 'Raleway', sans-serif;
-			font-weight: bold;
-			background-color: red;
-			border: 1px;
-			border-radius: 7px;
-		}
-	</style>
+	<link rel="stylesheet" href="style.css"></link>
 </head>
 <body style="background-color: black;">
 	<div class="split left">
@@ -232,6 +166,7 @@
 	  }
 
 	  //checks for which arrow key is pressed and sets the snake in that direction
+	  //prevents collison from happening when clicking opposite key
       function keyDownEvent(e){
 		switch(e.keyCode){
 			case 37:
@@ -309,8 +244,6 @@
 				<div id="6name" class="name" style="color: white;">Current Score</div><div id="current" class="score" style="color: red; font-weight: bold
 				"></div>
 				<div class = "name"><button onclick="clearLeaderboard()">Clear Leaderboard</button></div>
-				<label class = 'title'>Instructions</label>
-
 			</div>
 		</div>
 	</div>
